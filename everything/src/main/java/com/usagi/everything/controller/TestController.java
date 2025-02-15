@@ -3,6 +3,8 @@ package com.usagi.everything.controller;
 import com.usagi.everything.model.Test;
 import com.usagi.everything.service.TestService;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,11 @@ public class TestController {
 
     public TestController(TestService testService) {
         this.testService = testService;
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> testEndpoint() {
+        return ResponseEntity.status(HttpStatus.OK).body("Test endpoint!");
     }
 
     @GetMapping("/csrfToken")

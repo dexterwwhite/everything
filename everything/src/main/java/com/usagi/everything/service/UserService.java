@@ -9,18 +9,15 @@ import com.usagi.everything.dto.request.NewUserRequest;
 import com.usagi.everything.dto.response.NewUserResponse;
 import com.usagi.everything.model.User;
 import com.usagi.everything.repository.UserRepository;
-import com.usagi.everything.security.JwtUtil;
 
 @Service
 public class UserService implements UserDetailsService {
     
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -43,10 +40,9 @@ public class UserService implements UserDetailsService {
         String hashedPassword = passwordEncoder.encode(nur.getPassword());
         User dbUser = userRepository.save(new User(nur.getUsername(), hashedPassword, nur.getFirstName(), nur.getLastName(), nur.getEmail()));
         
-        String jwtToken = jwtUtil.generateToken(nur.getUsername());
         String message = "User " + dbUser.getUsername() + " has been registered successfully!";
 
-        return new NewUserResponse(jwtToken, dbUser.getUsername(), dbUser.getUserId(), message);
+        return new NewUserResponse(dbUser.getUsername(), dbUser.getUserId(), message);
     }
 
     public User addUser(NewUserRequest ur) {

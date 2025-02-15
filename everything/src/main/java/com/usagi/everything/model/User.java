@@ -51,6 +51,7 @@ public class User implements UserDetails {
         lastName = lname;
         this.email = email;
         freakLevel = 0;
+        role = "USER";
     }
 
     public long getUserId() {

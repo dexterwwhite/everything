@@ -12,8 +12,8 @@ public class NewUserResponse {
 
     public NewUserResponse() {}
 
-    public NewUserResponse(String token, String name, Long id, String msg) {
-        this.token = token;
+    public NewUserResponse(String name, Long id, String msg) {
+        token = "";
         username = name;
         userId = id;
         message = msg;
@@ -40,5 +40,9 @@ public class NewUserResponse {
 
     public String getMessage() {
         return message;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
