@@ -1,5 +1,7 @@
 package com.usagi.everything.service;
 
+import java.time.LocalDate;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,19 +47,33 @@ public class UserService implements UserDetailsService {
         return new NewUserResponse(dbUser.getUsername(), dbUser.getUserId(), message);
     }
 
-    public User addUser(NewUserRequest ur) {
-        if(userRepository.existsByUsername(ur.getUsername())) {
-            throw new IllegalArgumentException("ERROR: User with this username already exists!");
-        }
-        else if(userRepository.existsByEmail(ur.getEmail())) {
-            throw new IllegalArgumentException("ERROR: User with this email already exists!");
-        }
-        else if(!isStrongPassword(ur.getPassword()))
-        {
-            throw new IllegalArgumentException("ERROR: Password is not strong enough!");
+    public void handleLastLogin(String username) {
+        User user = userRepository.findByUsername(username);
+
+        LocalDate lastLogin = user.getLastLogin().toLocalDate();
+
+        // Increment freak level if this is their first login today
+        if(!lastLogin.equals(LocalDate.now())) {
+            user.incrementFreakLevel(1);
         }
 
-        return userRepository.save(new User(ur.getUsername(), ur.getPassword(), ur.getFirstName(), ur.getLastName(), ur.getEmail()));
+        // Check if they have a login streak, otherwise reset streak to 1
+        if(lastLogin.equals(LocalDate.now().minusDays(1))) {
+            user.setLoginStreak(user.getLoginStreak() + 1);
+        }
+        else if(!lastLogin.equals(LocalDate.now())) {
+            user.setLoginStreak(1);
+        }
+
+        // Bonus freak level for 7 logins in a row
+        if(user.getLoginStreak() > 0 && (user.getLoginStreak() % 7 == 0)) {
+            user.incrementFreakLevel(10);
+        }
+
+        // Sets last login to now
+        user.setLastLogin();
+
+        userRepository.save(user);
     }
 
     private boolean isStrongPassword(String password) {

@@ -54,6 +54,8 @@ public class UserController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
 
+            userService.handleLastLogin(req.getUsername());
+
             String message = "User " + req.getUsername() + " has been successfully authenticated!";
             UserLoginResponse resp = new UserLoginResponse(true, jwtUtil.generateToken(req.getUsername()), message);
             return ResponseEntity.status(HttpStatus.OK).body(resp);
