@@ -1,5 +1,6 @@
 package com.usagi.everything.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,10 +38,16 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private Integer freakLevel;
+    private int freakLevel;
 
     @Column(nullable = false)
     private String role;
+
+    @Column(nullable = false)
+    private LocalDateTime lastLogin;
+
+    @Column(nullable = false)
+    private int loginStreak;
 
     public User() {}
 
@@ -52,7 +59,13 @@ public class User implements UserDetails {
         this.email = email;
         freakLevel = 0;
         role = "USER";
+        lastLogin = LocalDateTime.now();
+        loginStreak = 1;
     }
+
+    /**
+     * Getter Methods
+     */
 
     public long getUserId() {
         return userId;
@@ -82,10 +95,37 @@ public class User implements UserDetails {
         return role;
     }
 
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public int getLoginStreak() {
+        return loginStreak;
+    }
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add(new SimpleGrantedAuthority(role));
 
         return authorities;
+    }
+
+    /**
+     * Setter/Update Methods
+     */
+    public void setFreakLevel(int newLevel) {
+        freakLevel = newLevel;
+    }
+
+    public void incrementFreakLevel(int addedLevel) {
+        freakLevel += addedLevel;
+    }
+
+    public void setLastLogin() {
+        lastLogin = LocalDateTime.now();
+    }
+
+    public void setLoginStreak(int streak) {
+        loginStreak = streak;
     }
 }
